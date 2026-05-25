@@ -17,6 +17,18 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+const TOKEN_KEY = "auth_token";
+
+const setAuthToken = (token: string | null) => {
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  } else {
+    localStorage.removeItem(TOKEN_KEY);
+    delete api.defaults.headers.common["Authorization"];
+  }
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,16 +39,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user || data);
     } catch {
       setUser(null);
+      setAuthToken(null);
     }
   };
 
   useEffect(() => {
+    // Load token from localStorage on mount
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) {
+      setAuthToken(token);
+    }
     refresh().finally(() => setLoading(false));
   }, []);
 
   const login = async (email: string, password: string) => {
     const { data } = await api.post("/auth/login", { email, password });
     const u = data.user || data;
+    const token = data.token || data._token;
+    if (token) {
+      setAuthToken(token);
+    }
     setUser(u);
     return u;
   };
@@ -49,6 +71,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }) => {
     const { data } = await api.post("/auth/register", payload);
     const u = data.user || data;
+    const token = data.token || data._token;
+    if (token) {
+      setAuthToken(token);
+    }
     setUser(u);
     return u;
   };
@@ -57,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await api.post("/auth/logout");
     } catch {}
+    setAuthToken(null);
     setUser(null);
   };
 
