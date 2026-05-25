@@ -7,6 +7,10 @@
       "config": {
         "distDir": "dist/client"
       }
+    },
+    {
+      "src": "api/ssr.ts",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -15,7 +19,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/api/ssr.ts"
     }
   ]
 }
