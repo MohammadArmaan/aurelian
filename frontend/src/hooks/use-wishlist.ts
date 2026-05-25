@@ -18,13 +18,19 @@ export function useWishlist() {
 
   const add = useMutation({
     mutationFn: async (productId: string) => (await api.post("/wishlist", { productId })).data,
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["wishlist"] }); toast.success("Saved to wishlist"); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["wishlist"] });
+      toast.success("Saved to wishlist");
+    },
     onError: (e: any) => toast.error(e?.response?.data?.message || "Could not save"),
   });
 
   const remove = useMutation({
     mutationFn: async (id: string) => api.delete(`/wishlist/${id}`),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["wishlist"] }); toast.success("Removed"); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["wishlist"] });
+      toast.success("Removed");
+    },
   });
 
   const items = q.data ?? [];

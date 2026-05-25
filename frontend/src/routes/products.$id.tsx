@@ -39,50 +39,87 @@ function PDP() {
       try {
         const { data } = await api.get(`/reviews/product/${id}`);
         return Array.isArray(data) ? data : data.reviews || [];
-      } catch { return []; }
+      } catch {
+        return [];
+      }
     },
   });
 
   const related = useQuery<Product[]>({
     queryKey: ["products", "related"],
     queryFn: async () => {
-      try { const { data } = await api.get("/products"); return (Array.isArray(data) ? data : data.products || []).slice(0, 4); }
-      catch { return []; }
+      try {
+        const { data } = await api.get("/products");
+        return (Array.isArray(data) ? data : data.products || []).slice(0, 4);
+      } catch {
+        return [];
+      }
     },
   });
 
   const submitReview = useMutation({
-    mutationFn: async () => (await api.post("/reviews", { productId: id, rating: reviewRating, comment: reviewBody })).data,
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["reviews", id] }); setReviewBody(""); toast.success("Review submitted"); },
+    mutationFn: async () =>
+      (await api.post("/reviews", { productId: id, rating: reviewRating, comment: reviewBody }))
+        .data,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["reviews", id] });
+      setReviewBody("");
+      toast.success("Review submitted");
+    },
     onError: (e: any) => toast.error(e?.response?.data?.message || "Could not submit review"),
   });
 
   const submitInquiry = useMutation({
-    mutationFn: async () => (await api.post("/bookings", { productId: id, type: "contractor_inquiry", ...inquiry })).data,
-    onSuccess: () => { toast.success("Inquiry sent. We'll respond within 48 hours."); setInquiry({ company: "", message: "" }); },
+    mutationFn: async () =>
+      (await api.post("/bookings", { productId: id, type: "contractor_inquiry", ...inquiry })).data,
+    onSuccess: () => {
+      toast.success("Inquiry sent. We'll respond within 48 hours.");
+      setInquiry({ company: "", message: "" });
+    },
     onError: (e: any) => toast.error(e?.response?.data?.message || "Could not send inquiry"),
   });
 
-  if (product.isLoading) return <div className="container mx-auto px-6 py-24"><div className="h-[60vh] bg-muted animate-pulse" /></div>;
-  if (!product.data) return <div className="container mx-auto px-6 py-24 text-center">Product not found.</div>;
+  if (product.isLoading)
+    return (
+      <div className="container mx-auto px-6 py-24">
+        <div className="h-[60vh] bg-muted animate-pulse" />
+      </div>
+    );
+  if (!product.data)
+    return <div className="container mx-auto px-6 py-24 text-center">Product not found.</div>;
 
   const p = product.data;
-  const images = p.images?.length ? p.images : [p.image || "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&q=80"];
-  const requireAuth = (fn: () => void) => () => { if (!user) return router.navigate({ to: "/login" }); fn(); };
+  const images = p.images?.length
+    ? p.images
+    : [p.image || "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&q=80"];
+  const requireAuth = (fn: () => void) => () => {
+    if (!user) return router.navigate({ to: "/login" });
+    fn();
+  };
 
   return (
     <div>
       <div className="container mx-auto px-6 py-16 grid lg:grid-cols-2 gap-16">
         {/* Gallery */}
         <div>
-          <motion.div layoutId={`img-${activeImg}`} className="aspect-square bg-muted overflow-hidden editorial-shadow group">
-            <img src={images[activeImg]} alt={p.name} className="h-full w-full object-cover hover:scale-105 transition-transform duration-1000" />
+          <motion.div
+            layoutId={`img-${activeImg}`}
+            className="aspect-square bg-muted overflow-hidden editorial-shadow group"
+          >
+            <img
+              src={images[activeImg]}
+              alt={p.name}
+              className="h-full w-full object-cover hover:scale-105 transition-transform duration-1000"
+            />
           </motion.div>
           {images.length > 1 && (
             <div className="grid grid-cols-5 gap-3 mt-4">
               {images.map((src, i) => (
-                <button key={i} onClick={() => setActiveImg(i)}
-                  className={`aspect-square overflow-hidden border-2 ${i === activeImg ? "border-accent" : "border-transparent"}`}>
+                <button
+                  key={i}
+                  onClick={() => setActiveImg(i)}
+                  className={`aspect-square overflow-hidden border-2 ${i === activeImg ? "border-accent" : "border-transparent"}`}
+                >
                   <img src={src} alt="" className="h-full w-full object-cover" />
                 </button>
               ))}
@@ -105,15 +142,28 @@ function PDP() {
               </div>
             )}
           </div>
-          <p className="mt-8 leading-relaxed text-muted-foreground">{p.description || "A timeless piece, made by hand in our atelier."}</p>
+          <p className="mt-8 leading-relaxed text-muted-foreground">
+            {p.description || "A timeless piece, made by hand in our atelier."}
+          </p>
 
           <div className="mt-8 grid grid-cols-2 gap-4 text-sm">
             {p.material && <Spec icon={Hammer} label="Material" value={p.material} />}
-            {p.dimensions && <Spec icon={Ruler} label="Dimensions" value={`${p.dimensions.width ?? "—"}W × ${p.dimensions.height ?? "—"}H × ${p.dimensions.depth ?? "—"}D cm`} />}
+            {p.dimensions && (
+              <Spec
+                icon={Ruler}
+                label="Dimensions"
+                value={`${p.dimensions.width ?? "—"}W × ${p.dimensions.height ?? "—"}H × ${p.dimensions.depth ?? "—"}D cm`}
+              />
+            )}
           </div>
 
           <div className="flex gap-3 mt-10">
-            <Button size="lg" className="flex-1" onClick={requireAuth(() => addCart.mutate({ productId: p._id }))} disabled={addCart.isPending}>
+            <Button
+              size="lg"
+              className="flex-1"
+              onClick={requireAuth(() => addCart.mutate({ productId: p._id }))}
+              disabled={addCart.isPending}
+            >
               <ShoppingBag className="h-4 w-4" /> {addCart.isPending ? "Adding…" : "Add to cart"}
             </Button>
             <Button size="lg" variant="outline" onClick={requireAuth(() => addWish.mutate(p._id))}>
@@ -133,31 +183,61 @@ function PDP() {
                   <div className="flex gap-1">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <button key={n} onClick={() => setReviewRating(n)}>
-                        <Star className={`h-5 w-5 ${n <= reviewRating ? "fill-current text-accent" : "text-muted-foreground"}`} />
+                        <Star
+                          className={`h-5 w-5 ${n <= reviewRating ? "fill-current text-accent" : "text-muted-foreground"}`}
+                        />
                       </button>
                     ))}
                   </div>
-                  <Textarea value={reviewBody} onChange={(e) => setReviewBody(e.target.value)} placeholder="Share your thoughts" />
-                  <Button onClick={() => submitReview.mutate()} disabled={!reviewBody || submitReview.isPending}>
+                  <Textarea
+                    value={reviewBody}
+                    onChange={(e) => setReviewBody(e.target.value)}
+                    placeholder="Share your thoughts"
+                  />
+                  <Button
+                    onClick={() => submitReview.mutate()}
+                    disabled={!reviewBody || submitReview.isPending}
+                  >
                     {submitReview.isPending ? "Submitting…" : "Submit review"}
                   </Button>
                 </div>
               )}
-              {reviews.data?.length ? reviews.data.map((r: any) => (
-                <div key={r._id} className="border-t pt-4">
-                  <div className="flex items-center gap-2">
-                    <strong className="font-serif">{r.user?.name || "Guest"}</strong>
-                    <div className="flex">{Array.from({ length: r.rating }).map((_, i) => <Star key={i} className="h-3 w-3 fill-current text-accent" />)}</div>
+              {reviews.data?.length ? (
+                reviews.data.map((r: any) => (
+                  <div key={r._id} className="border-t pt-4">
+                    <div className="flex items-center gap-2">
+                      <strong className="font-serif">{r.user?.name || "Guest"}</strong>
+                      <div className="flex">
+                        {Array.from({ length: r.rating }).map((_, i) => (
+                          <Star key={i} className="h-3 w-3 fill-current text-accent" />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="mt-2 text-sm text-muted-foreground">{r.comment}</p>
                   </div>
-                  <p className="mt-2 text-sm text-muted-foreground">{r.comment}</p>
-                </div>
-              )) : <p className="text-muted-foreground text-sm">No reviews yet.</p>}
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm">No reviews yet.</p>
+              )}
             </TabsContent>
             <TabsContent value="contractor" className="space-y-3 pt-6">
-              <p className="text-sm text-muted-foreground">Specifying this piece for a project? Send us a brief.</p>
-              <Input placeholder="Studio / company" value={inquiry.company} onChange={(e) => setInquiry({ ...inquiry, company: e.target.value })} />
-              <Textarea placeholder="Quantity, finish requests, lead time…" value={inquiry.message} onChange={(e) => setInquiry({ ...inquiry, message: e.target.value })} />
-              <Button onClick={requireAuth(() => submitInquiry.mutate())} disabled={submitInquiry.isPending}>
+              <p className="text-sm text-muted-foreground">
+                Specifying this piece for a project? Send us a brief.
+              </p>
+              <Input
+                placeholder="Studio / company"
+                value={inquiry.company}
+                onChange={(e) => setInquiry({ ...inquiry, company: e.target.value })}
+              />
+              <Textarea
+                placeholder="Quantity, finish requests, lead time…"
+                value={inquiry.message}
+                onChange={(e) => setInquiry({ ...inquiry, message: e.target.value })}
+              />
+              <Button
+                onClick={requireAuth(() => submitInquiry.mutate())}
+                disabled={submitInquiry.isPending}
+              >
                 {submitInquiry.isPending ? "Sending…" : "Request a quote"}
               </Button>
             </TabsContent>
@@ -169,7 +249,12 @@ function PDP() {
       <section className="container mx-auto px-6 py-24">
         <h2 className="font-serif text-3xl mb-12">You may also love</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
-          {related.data?.filter((r) => r._id !== id).slice(0, 4).map((r) => <ProductCard key={r._id} product={r} />)}
+          {related.data
+            ?.filter((r) => r._id !== id)
+            .slice(0, 4)
+            .map((r) => (
+              <ProductCard key={r._id} product={r} />
+            ))}
         </div>
       </section>
     </div>

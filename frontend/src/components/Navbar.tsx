@@ -6,8 +6,12 @@ import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/hooks/use-cart";
 import { useWishlist } from "@/hooks/use-wishlist";
 import {
-  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
-  DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
@@ -60,7 +64,12 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => router.navigate({ to: "/shop" })} aria-label="Search">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.navigate({ to: "/shop" })}
+            aria-label="Search"
+          >
             <Search className="h-5 w-5" />
           </Button>
 
@@ -99,29 +108,53 @@ export function Navbar() {
                   <div className="text-xs text-muted-foreground font-normal">{user.email}</div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={() => router.navigate({ to: "/dashboard" })}>Dashboard</DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => router.navigate({ to: "/orders" })}>Orders</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => router.navigate({ to: "/dashboard" })}>
+                  Dashboard
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => router.navigate({ to: "/orders" })}>
+                  Orders
+                </DropdownMenuItem>
                 {user.role === "contractor" && (
-                  <DropdownMenuItem onSelect={() => router.navigate({ to: "/contractor" })}>Contractor</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => router.navigate({ to: "/contractor" })}>
+                    Contractor
+                  </DropdownMenuItem>
                 )}
                 {user.role === "admin" && (
-                  <DropdownMenuItem onSelect={() => router.navigate({ to: "/admin" })}>Admin</DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => router.navigate({ to: "/admin" })}>
+                    Admin
+                  </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onSelect={() => router.navigate({ to: "/bookings" })}>Bookings</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => router.navigate({ to: "/bookings" })}>
+                  Bookings
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={async () => { await logout(); router.navigate({ to: "/" }); }}>
+                <DropdownMenuItem
+                  onSelect={async () => {
+                    await logout();
+                    router.navigate({ to: "/" });
+                  }}
+                >
                   Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <div className="hidden sm:flex items-center gap-2 ml-2">
-              <Button variant="ghost" size="sm" onClick={() => router.navigate({ to: "/login" })}>Login</Button>
-              <Button size="sm" onClick={() => router.navigate({ to: "/signup" })}>Sign up</Button>
+              <Button variant="ghost" size="sm" onClick={() => router.navigate({ to: "/login" })}>
+                Login
+              </Button>
+              <Button size="sm" onClick={() => router.navigate({ to: "/signup" })}>
+                Sign up
+              </Button>
             </div>
           )}
 
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setMobileOpen(!mobileOpen)}
+          >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
@@ -137,15 +170,36 @@ export function Navbar() {
           >
             <div className="container mx-auto px-6 py-6 flex flex-col gap-4">
               {links.map((l) => (
-                <Link key={l.to} to={l.to} onClick={() => setMobileOpen(false)}
-                  className="text-sm uppercase tracking-wide py-2">
+                <Link
+                  key={l.to}
+                  to={l.to}
+                  onClick={() => setMobileOpen(false)}
+                  className="text-sm uppercase tracking-wide py-2"
+                >
                   {l.label}
                 </Link>
               ))}
               {!user && (
                 <div className="flex gap-2 pt-2">
-                  <Button variant="outline" className="flex-1" onClick={() => { setMobileOpen(false); router.navigate({ to: "/login" }); }}>Login</Button>
-                  <Button className="flex-1" onClick={() => { setMobileOpen(false); router.navigate({ to: "/signup" }); }}>Sign up</Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      router.navigate({ to: "/login" });
+                    }}
+                  >
+                    Login
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      router.navigate({ to: "/signup" });
+                    }}
+                  >
+                    Sign up
+                  </Button>
                 </div>
               )}
             </div>

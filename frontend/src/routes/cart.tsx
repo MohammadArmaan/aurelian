@@ -11,15 +11,39 @@ function Cart() {
   const { items, subtotal, update, remove, isLoading } = useCart();
   const router = useRouter();
 
-  if (loading) return <Page><div className="h-40 animate-pulse bg-muted" /></Page>;
-  if (!user) return (
-    <Page>
-      <Empty title="Sign in to view your cart" cta="Log in" onCta={() => router.navigate({ to: "/login" })} />
-    </Page>
-  );
+  if (loading)
+    return (
+      <Page>
+        <div className="h-40 animate-pulse bg-muted" />
+      </Page>
+    );
+  if (!user)
+    return (
+      <Page>
+        <Empty
+          title="Sign in to view your cart"
+          cta="Log in"
+          onCta={() => router.navigate({ to: "/login" })}
+        />
+      </Page>
+    );
 
-  if (isLoading) return <Page><div className="h-40 animate-pulse bg-muted" /></Page>;
-  if (!items.length) return <Page><Empty title="Your cart is empty" cta="Browse the collection" onCta={() => router.navigate({ to: "/shop" })} /></Page>;
+  if (isLoading)
+    return (
+      <Page>
+        <div className="h-40 animate-pulse bg-muted" />
+      </Page>
+    );
+  if (!items.length)
+    return (
+      <Page>
+        <Empty
+          title="Your cart is empty"
+          cta="Browse the collection"
+          onCta={() => router.navigate({ to: "/shop" })}
+        />
+      </Page>
+    );
 
   return (
     <Page>
@@ -29,27 +53,53 @@ function Cart() {
             const p = item.product;
             const img = p.images?.[0] || p.image || "";
             return (
-              <div key={item._id} className="grid grid-cols-[120px_1fr_auto] gap-6 border-b border-border pb-6">
-                <Link to="/products/$id" params={{ id: p._id }} className="aspect-square bg-muted overflow-hidden">
+              <div
+                key={item._id}
+                className="grid grid-cols-[120px_1fr_auto] gap-6 border-b border-border pb-6"
+              >
+                <Link
+                  to="/products/$id"
+                  params={{ id: p._id }}
+                  className="aspect-square bg-muted overflow-hidden"
+                >
                   <img src={img} alt={p.name} className="h-full w-full object-cover" />
                 </Link>
                 <div>
                   <h3 className="font-serif text-xl">{p.name}</h3>
-                  {p.material && <p className="text-xs uppercase tracking-widest text-muted-foreground mt-1">{p.material}</p>}
+                  {p.material && (
+                    <p className="text-xs uppercase tracking-widest text-muted-foreground mt-1">
+                      {p.material}
+                    </p>
+                  )}
                   <div className="mt-4 flex items-center gap-2 border border-border w-fit">
-                    <Button variant="ghost" size="icon" disabled={item.quantity <= 1}
-                      onClick={() => update.mutate({ id: item._id, quantity: item.quantity - 1 })}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      disabled={item.quantity <= 1}
+                      onClick={() => update.mutate({ id: item._id, quantity: item.quantity - 1 })}
+                    >
                       <Minus className="h-3 w-3" />
                     </Button>
                     <span className="w-8 text-center">{item.quantity}</span>
-                    <Button variant="ghost" size="icon" onClick={() => update.mutate({ id: item._id, quantity: item.quantity + 1 })}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => update.mutate({ id: item._id, quantity: item.quantity + 1 })}
+                    >
                       <Plus className="h-3 w-3" />
                     </Button>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-serif text-xl">${(p.price * item.quantity).toLocaleString()}</div>
-                  <Button variant="ghost" size="sm" className="mt-2" onClick={() => remove.mutate(item._id)}>
+                  <div className="font-serif text-xl">
+                    ${(p.price * item.quantity).toLocaleString()}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => remove.mutate(item._id)}
+                  >
                     <X className="h-3 w-3" /> Remove
                   </Button>
                 </div>
@@ -65,7 +115,13 @@ function Cart() {
           </div>
           <div className="border-t border-border my-6" />
           <Row label="Total" value={`$${subtotal.toLocaleString()}`} large />
-          <Button className="w-full mt-8" size="lg" onClick={() => router.navigate({ to: "/checkout" })}>Proceed to checkout</Button>
+          <Button
+            className="w-full mt-8"
+            size="lg"
+            onClick={() => router.navigate({ to: "/checkout" })}
+          >
+            Proceed to checkout
+          </Button>
         </aside>
       </div>
     </Page>
@@ -74,7 +130,10 @@ function Cart() {
 
 function Row({ label, value, large }: any) {
   return (
-    <div className={`flex justify-between ${large ? "font-serif text-xl" : ""}`}><span>{label}</span><span>{value}</span></div>
+    <div className={`flex justify-between ${large ? "font-serif text-xl" : ""}`}>
+      <span>{label}</span>
+      <span>{value}</span>
+    </div>
   );
 }
 function Page({ children }: any) {

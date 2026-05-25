@@ -16,7 +16,10 @@ function Admin() {
   });
 
   if (loading) return null;
-  if (!user) { router.navigate({ to: "/login" }); return null; }
+  if (!user) {
+    router.navigate({ to: "/login" });
+    return null;
+  }
   if (user.role !== "admin") {
     return (
       <div className="container mx-auto px-6 py-32 text-center">
@@ -30,13 +33,18 @@ function Admin() {
   const metrics = [
     { label: "Users", value: s.users ?? s.totalUsers ?? "—" },
     { label: "Orders", value: s.orders ?? s.totalOrders ?? "—" },
-    { label: "Revenue", value: typeof s.revenue === "number" ? `$${s.revenue.toLocaleString()}` : (s.revenue ?? "—") },
+    {
+      label: "Revenue",
+      value: typeof s.revenue === "number" ? `$${s.revenue.toLocaleString()}` : (s.revenue ?? "—"),
+    },
     { label: "Products", value: s.products ?? s.totalProducts ?? "—" },
   ];
 
   return (
     <div className="container mx-auto px-6 py-16">
-      <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground mb-3">Atelier operations</p>
+      <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground mb-3">
+        Atelier operations
+      </p>
       <h1 className="font-serif text-5xl">Admin dashboard</h1>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-12">

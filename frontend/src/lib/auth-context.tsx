@@ -5,7 +5,12 @@ type AuthContextType = {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<User>;
-  register: (data: { name: string; email: string; password: string; role?: string }) => Promise<User>;
+  register: (data: {
+    name: string;
+    email: string;
+    password: string;
+    role?: string;
+  }) => Promise<User>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 };
@@ -36,7 +41,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return u;
   };
 
-  const register = async (payload: { name: string; email: string; password: string; role?: string }) => {
+  const register = async (payload: {
+    name: string;
+    email: string;
+    password: string;
+    role?: string;
+  }) => {
     const { data } = await api.post("/auth/register", payload);
     const u = data.user || data;
     setUser(u);
@@ -44,7 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    try { await api.post("/auth/logout"); } catch {}
+    try {
+      await api.post("/auth/logout");
+    } catch {}
     setUser(null);
   };
 

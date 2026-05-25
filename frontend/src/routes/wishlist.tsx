@@ -14,9 +14,32 @@ function Wishlist() {
   const { add } = useCart();
   const router = useRouter();
 
-  if (loading || isLoading) return <Page><div className="h-40 bg-muted animate-pulse" /></Page>;
-  if (!user) return <Page><Empty title="Sign in to view your wishlist" cta="Log in" onCta={() => router.navigate({ to: "/login" })} /></Page>;
-  if (!items.length) return <Page><Empty title="Your wishlist is empty" cta="Explore the collection" onCta={() => router.navigate({ to: "/shop" })} /></Page>;
+  if (loading || isLoading)
+    return (
+      <Page>
+        <div className="h-40 bg-muted animate-pulse" />
+      </Page>
+    );
+  if (!user)
+    return (
+      <Page>
+        <Empty
+          title="Sign in to view your wishlist"
+          cta="Log in"
+          onCta={() => router.navigate({ to: "/login" })}
+        />
+      </Page>
+    );
+  if (!items.length)
+    return (
+      <Page>
+        <Empty
+          title="Your wishlist is empty"
+          cta="Explore the collection"
+          onCta={() => router.navigate({ to: "/shop" })}
+        />
+      </Page>
+    );
 
   return (
     <Page>
@@ -27,7 +50,11 @@ function Wishlist() {
             <div key={w._id} className="group">
               <Link to="/products/$id" params={{ id: p._id }}>
                 <div className="aspect-[4/5] bg-muted overflow-hidden hover-zoom">
-                  <img src={p.images?.[0] || p.image} alt={p.name} className="h-full w-full object-cover" />
+                  <img
+                    src={p.images?.[0] || p.image}
+                    alt={p.name}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
               </Link>
               <div className="mt-4 flex items-start justify-between">
@@ -36,7 +63,11 @@ function Wishlist() {
                   <div className="text-sm">${p.price?.toLocaleString()}</div>
                 </div>
                 <div className="flex gap-1">
-                  <Button size="icon" variant="ghost" onClick={() => add.mutate({ productId: p._id })}>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => add.mutate({ productId: p._id })}
+                  >
                     <ShoppingBag className="h-4 w-4" />
                   </Button>
                   <Button size="icon" variant="ghost" onClick={() => remove.mutate(w._id)}>
@@ -53,8 +84,18 @@ function Wishlist() {
 }
 
 function Page({ children }: any) {
-  return <div className="container mx-auto px-6 py-16"><h1 className="font-serif text-5xl mb-12">Wishlist</h1>{children}</div>;
+  return (
+    <div className="container mx-auto px-6 py-16">
+      <h1 className="font-serif text-5xl mb-12">Wishlist</h1>
+      {children}
+    </div>
+  );
 }
 function Empty({ title, cta, onCta }: any) {
-  return <div className="text-center py-24 border border-dashed border-border"><p className="font-serif text-2xl mb-6">{title}</p><Button onClick={onCta}>{cta}</Button></div>;
+  return (
+    <div className="text-center py-24 border border-dashed border-border">
+      <p className="font-serif text-2xl mb-6">{title}</p>
+      <Button onClick={onCta}>{cta}</Button>
+    </div>
+  );
 }

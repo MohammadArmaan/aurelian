@@ -5,7 +5,13 @@ import { ProductCard, ProductCardSkeleton } from "@/components/ProductCard";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Search, SlidersHorizontal } from "lucide-react";
 
@@ -29,7 +35,9 @@ function Shop() {
       try {
         const { data } = await api.get("/products");
         return Array.isArray(data) ? data : data.products || [];
-      } catch { return []; }
+      } catch {
+        return [];
+      }
     },
   });
 
@@ -39,14 +47,18 @@ function Shop() {
       try {
         const { data } = await api.get("/categories");
         return Array.isArray(data) ? data : data.categories || [];
-      } catch { return []; }
+      } catch {
+        return [];
+      }
     },
   });
 
   const filtered = useMemo(() => {
     return (products.data || []).filter((p) => {
-      if (q && !`${p.name} ${p.description ?? ""}`.toLowerCase().includes(q.toLowerCase())) return false;
-      if (category && (typeof p.category === "string" ? p.category : p.category?.name) !== category) return false;
+      if (q && !`${p.name} ${p.description ?? ""}`.toLowerCase().includes(q.toLowerCase()))
+        return false;
+      if (category && (typeof p.category === "string" ? p.category : p.category?.name) !== category)
+        return false;
       if (material && p.material !== material) return false;
       if (location && p.location !== location) return false;
       if (rating && (p.rating ?? 0) < Number(rating)) return false;
@@ -56,18 +68,22 @@ function Shop() {
   }, [products.data, q, category, material, location, rating, price]);
 
   const materials = useMemo(
-    () => Array.from(new Set((products.data || []).map((p) => p.material).filter(Boolean))) as string[],
+    () =>
+      Array.from(new Set((products.data || []).map((p) => p.material).filter(Boolean))) as string[],
     [products.data],
   );
   const locations = useMemo(
-    () => Array.from(new Set((products.data || []).map((p) => p.location).filter(Boolean))) as string[],
+    () =>
+      Array.from(new Set((products.data || []).map((p) => p.location).filter(Boolean))) as string[],
     [products.data],
   );
 
   return (
     <div className="container mx-auto px-6 py-16">
       <header className="mb-12">
-        <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground mb-3">The collection</p>
+        <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground mb-3">
+          The collection
+        </p>
         <h1 className="font-serif text-5xl md:text-6xl">Shop everything</h1>
       </header>
 
@@ -78,24 +94,64 @@ function Shop() {
             <label className="text-xs uppercase tracking-widest mb-3 block">Search</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products" className="pl-9" />
+              <Input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search products"
+                className="pl-9"
+              />
             </div>
           </div>
 
-          <FilterSelect label="Category" value={category} onChange={setCategory}
-            options={(categories.data || []).map((c: any) => c.name || c)} />
-          <FilterSelect label="Material" value={material} onChange={setMaterial} options={materials} />
-          <FilterSelect label="Location" value={location} onChange={setLocation} options={locations} />
-          <FilterSelect label="Min rating" value={rating} onChange={setRating} options={["3", "4", "4.5"]} />
+          <FilterSelect
+            label="Category"
+            value={category}
+            onChange={setCategory}
+            options={(categories.data || []).map((c: any) => c.name || c)}
+          />
+          <FilterSelect
+            label="Material"
+            value={material}
+            onChange={setMaterial}
+            options={materials}
+          />
+          <FilterSelect
+            label="Location"
+            value={location}
+            onChange={setLocation}
+            options={locations}
+          />
+          <FilterSelect
+            label="Min rating"
+            value={rating}
+            onChange={setRating}
+            options={["3", "4", "4.5"]}
+          />
 
           <div>
             <label className="text-xs uppercase tracking-widest mb-3 block">
               Price ${price[0]} — ${price[1]}
             </label>
-            <Slider min={0} max={20000} step={100} value={price} onValueChange={(v) => setPrice(v as [number, number])} />
+            <Slider
+              min={0}
+              max={20000}
+              step={100}
+              value={price}
+              onValueChange={(v) => setPrice(v as [number, number])}
+            />
           </div>
 
-          <Button variant="outline" onClick={() => { setQ(""); setCategory(""); setMaterial(""); setLocation(""); setRating(""); setPrice([0, 20000]); }}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setQ("");
+              setCategory("");
+              setMaterial("");
+              setLocation("");
+              setRating("");
+              setPrice([0, 20000]);
+            }}
+          >
             <SlidersHorizontal className="h-4 w-4" /> Clear filters
           </Button>
         </aside>
@@ -119,15 +175,31 @@ function Shop() {
   );
 }
 
-function FilterSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
+function FilterSelect({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+}) {
   return (
     <div>
       <label className="text-xs uppercase tracking-widest mb-3 block">{label}</label>
       <Select value={value || "__all"} onValueChange={(v) => onChange(v === "__all" ? "" : v)}>
-        <SelectTrigger><SelectValue placeholder="All" /></SelectTrigger>
+        <SelectTrigger>
+          <SelectValue placeholder="All" />
+        </SelectTrigger>
         <SelectContent>
           <SelectItem value="__all">All</SelectItem>
-          {options.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+          {options.map((o) => (
+            <SelectItem key={o} value={o}>
+              {o}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>

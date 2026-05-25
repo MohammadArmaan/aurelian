@@ -18,10 +18,16 @@ export function useCart() {
 
   const add = useMutation({
     mutationFn: async (vars: { productId: string; quantity?: number }) => {
-      const { data } = await api.post("/cart", { productId: vars.productId, quantity: vars.quantity ?? 1 });
+      const { data } = await api.post("/cart", {
+        productId: vars.productId,
+        quantity: vars.quantity ?? 1,
+      });
       return data;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["cart"] }); toast.success("Added to cart"); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["cart"] });
+      toast.success("Added to cart");
+    },
     onError: (e: any) => toast.error(e?.response?.data?.message || "Could not add to cart"),
   });
 
@@ -35,7 +41,10 @@ export function useCart() {
 
   const remove = useMutation({
     mutationFn: async (id: string) => api.delete(`/cart/${id}`),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["cart"] }); toast.success("Removed from cart"); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["cart"] });
+      toast.success("Removed from cart");
+    },
   });
 
   const items = cart.data ?? [];

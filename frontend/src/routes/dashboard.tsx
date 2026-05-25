@@ -15,16 +15,28 @@ function Dashboard() {
   const [form, setForm] = useState({ name: "", email: "" });
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => { if (user) setForm({ name: user.name, email: user.email }); }, [user]);
+  useEffect(() => {
+    if (user) setForm({ name: user.name, email: user.email });
+  }, [user]);
 
   if (loading) return null;
-  if (!user) { router.navigate({ to: "/login" }); return null; }
+  if (!user) {
+    router.navigate({ to: "/login" });
+    return null;
+  }
 
   const save = async (e: React.FormEvent) => {
-    e.preventDefault(); setSaving(true);
-    try { await api.put("/users/profile", form); await refresh(); toast.success("Profile updated"); }
-    catch (err: any) { toast.error(err?.response?.data?.message || "Could not update"); }
-    finally { setSaving(false); }
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await api.put("/users/profile", form);
+      await refresh();
+      toast.success("Profile updated");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Could not update");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -41,16 +53,31 @@ function Dashboard() {
 
       <form onSubmit={save} className="mt-16 space-y-5 max-w-md">
         <h2 className="font-serif text-2xl">Account details</h2>
-        <Field label="Name"><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
-        <Field label="Email"><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></Field>
-        <Button type="submit" disabled={saving}>{saving ? "Saving…" : "Save changes"}</Button>
+        <Field label="Name">
+          <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+        </Field>
+        <Field label="Email">
+          <Input
+            type="email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+        </Field>
+        <Button type="submit" disabled={saving}>
+          {saving ? "Saving…" : "Save changes"}
+        </Button>
       </form>
     </div>
   );
 }
 
 function Field({ label, children }: any) {
-  return <div><Label className="text-xs uppercase tracking-widest mb-2 block">{label}</Label>{children}</div>;
+  return (
+    <div>
+      <Label className="text-xs uppercase tracking-widest mb-2 block">{label}</Label>
+      {children}
+    </div>
+  );
 }
 
 function Quick({ title, to }: { title: string; to: string }) {

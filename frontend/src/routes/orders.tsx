@@ -12,11 +12,21 @@ function Orders() {
   const q = useQuery<any[]>({
     queryKey: ["orders", "mine"],
     enabled: !!user,
-    queryFn: async () => { try { const { data } = await api.get("/orders/mine"); return Array.isArray(data) ? data : data.orders || []; } catch { return []; } },
+    queryFn: async () => {
+      try {
+        const { data } = await api.get("/orders/mine");
+        return Array.isArray(data) ? data : data.orders || [];
+      } catch {
+        return [];
+      }
+    },
   });
 
   if (loading) return null;
-  if (!user) { router.navigate({ to: "/login" }); return null; }
+  if (!user) {
+    router.navigate({ to: "/login" });
+    return null;
+  }
 
   return (
     <div className="container mx-auto px-6 py-16">
@@ -33,10 +43,14 @@ function Orders() {
             <div>
               <div className="text-xs uppercase tracking-widest text-muted-foreground">Order</div>
               <div className="font-serif text-lg">#{o._id?.slice(-8)}</div>
-              <div className="text-sm text-muted-foreground mt-1">{new Date(o.createdAt).toLocaleDateString()}</div>
+              <div className="text-sm text-muted-foreground mt-1">
+                {new Date(o.createdAt).toLocaleDateString()}
+              </div>
             </div>
             <div className="text-right">
-              <div className="font-serif text-xl">${(o.total ?? o.totalPrice ?? 0).toLocaleString()}</div>
+              <div className="font-serif text-xl">
+                ${(o.total ?? o.totalPrice ?? 0).toLocaleString()}
+              </div>
               <div className="text-xs uppercase tracking-widest mt-1">{o.status || "pending"}</div>
             </div>
           </div>

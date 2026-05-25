@@ -13,7 +13,10 @@ export function ProductCard({ product }: { product: Product }) {
   const { add: addWish } = useWishlist();
   const { user } = useAuth();
   const router = useRouter();
-  const img = product.images?.[0] || product.image || `https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80`;
+  const img =
+    product.images?.[0] ||
+    product.image ||
+    `https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80`;
 
   const requireAuth = (fn: () => void) => () => {
     if (!user) return router.navigate({ to: "/login" });
@@ -34,14 +37,24 @@ export function ProductCard({ product }: { product: Product }) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="absolute right-4 top-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-2 group-hover:translate-y-0">
             <Button
-              size="icon" variant="secondary" className="glass border-0 rounded-full h-10 w-10"
-              onClick={(e) => { e.preventDefault(); requireAuth(() => addWish.mutate(product._id))(); }}
+              size="icon"
+              variant="secondary"
+              className="glass border-0 rounded-full h-10 w-10"
+              onClick={(e) => {
+                e.preventDefault();
+                requireAuth(() => addWish.mutate(product._id))();
+              }}
             >
               <Heart className="h-4 w-4" />
             </Button>
             <Button
-              size="icon" variant="secondary" className="glass border-0 rounded-full h-10 w-10"
-              onClick={(e) => { e.preventDefault(); requireAuth(() => add.mutate({ productId: product._id }))(); }}
+              size="icon"
+              variant="secondary"
+              className="glass border-0 rounded-full h-10 w-10"
+              onClick={(e) => {
+                e.preventDefault();
+                requireAuth(() => add.mutate({ productId: product._id }))();
+              }}
             >
               <ShoppingBag className="h-4 w-4" />
             </Button>
@@ -51,7 +64,11 @@ export function ProductCard({ product }: { product: Product }) {
       <div className="mt-4 flex items-start justify-between gap-4">
         <div>
           <h3 className="font-serif text-lg leading-tight">{product.name}</h3>
-          {product.material && <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">{product.material}</p>}
+          {product.material && (
+            <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">
+              {product.material}
+            </p>
+          )}
         </div>
         <div className="text-right">
           <div className="font-serif text-lg">${product.price?.toLocaleString()}</div>
